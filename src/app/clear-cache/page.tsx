@@ -7,9 +7,11 @@ export default function ClearCachePage() {
   const router = useRouter()
 
   useEffect(() => {
-    // Limpar localStorage
-    localStorage.removeItem('aeropizza_cart')
-    console.log('✅ Carrinho limpo com sucesso!')
+    if (typeof window !== 'undefined') {
+      // Limpar localStorage
+      localStorage.removeItem('aeropizza_cart')
+      console.log('✅ Carrinho limpo com sucesso!')
+    }
     
     // Redirecionar para home após 2 segundos
     setTimeout(() => {
