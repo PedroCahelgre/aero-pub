@@ -7,7 +7,7 @@ import { ShoppingCart, Calendar, Menu, X, Phone, Settings } from 'lucide-react'
 import Link from 'next/link'
 
 export default function Navbar() {
-  const [currentTime, setCurrentTime] = useState(null)
+  const [currentTime, setCurrentTime] = useState<Date | null>(null)
   const [cartCount, setCartCount] = useState(0)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)

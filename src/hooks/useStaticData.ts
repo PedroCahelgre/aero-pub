@@ -1,8 +1,38 @@
 // Hook para usar dados do banco de dados
 import { useState, useEffect } from 'react'
+import { getStaticCategories, getStaticPixConfig } from '@/lib/static-utils'
+
+// Tipos de dados (idealmente, viriam de um arquivo de tipos compartilhado)
+interface Product {
+  id: string
+  name: string
+  description: string
+  price: number
+  image?: string
+  category: {
+    name: string
+  }
+  preparationTime: number
+  available: boolean
+  ingredients?: string
+}
+
+interface Category {
+  id: string
+  name: string
+  active: boolean
+}
+
+interface PixConfig {
+  key: string
+  pixKey: string
+  pixType: string
+  recipient: string
+  active: boolean
+}
 
 export function useStaticProducts() {
-  const [products, setProducts] = useState([])
+  const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -37,7 +67,7 @@ export function useStaticProducts() {
 }
 
 export function useStaticCategories() {
-  const [categories, setCategories] = useState([])
+  const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -56,7 +86,7 @@ export function useStaticCategories() {
 }
 
 export function useStaticPixConfig() {
-  const [pixConfig, setPixConfig] = useState(null)
+  const [pixConfig, setPixConfig] = useState<PixConfig | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {

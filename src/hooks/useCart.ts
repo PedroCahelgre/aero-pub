@@ -16,54 +16,38 @@ export interface CartItem {
   notes: string
 }
 
-export function useCart() {
-  const [cart, setCart] = useState<CartItem[]>([])
+// Helper function to safely load cart from localStorage on the client side
+const getInitialCart = () => {
+  if (typeof window === 'undefined') {
+    return [];
+  }
+  try {
+    const savedCart = window.localStorage.getItem('aeropizza_cart');
+    console.log('🔄 Carregando carrinho inicial do localStorage:', savedCart);
+    return savedCart ? JSON.parse(savedCart) : [];
+  } catch (error) {
+    console.error('❌ Erro ao carregar carrinho inicial:', error);
+    return [];
+  }
+};
 
-  // Função para carregar carrinho do localStorage de forma síncrona
-  const loadCartFromStorage = useCallback(() => {
+export function useCart() {
+  const [cart, setCart] = useState<CartItem[]>(getInitialCart);
+
+  // Salvar carrinho no localStorage
+  useEffect(() => {
     try {
-      const savedCart = localStorage.getItem('aeropizza_cart')
-      console.log('🔄 Carregando carrinho do localStorage:', savedCart)
-      
-      if (savedCart) {
-        const parsedCart = JSON.parse(savedCart)
-        console.log('📦 Carrinho carregado:', parsedCart)
-        return parsedCart
+      console.log('💾 Salvando carrinho no localStorage:', cart)
+      if (cart.length > 0) {
+        localStorage.setItem('aeropizza_cart', JSON.stringify(cart))
+        console.log('✅ Carrinho salvo com sucesso')
       } else {
-        console.log('📭 Nenhum carrinho salvo encontrado')
-        return []
+        localStorage.removeItem('aeropizza_cart')
+        console.log('🗑️ Carrinho removido (está vazio)')
       }
     } catch (error) {
-      console.error('❌ Erro ao carregar carrinho:', error)
-      localStorage.removeItem('aeropizza_cart')
-      return []
+      console.error('❌ Erro ao salvar carrinho:', error)
     }
-  }, [])
-
-  // Carregar carrinho do localStorage ao montar
-  useEffect(() => {
-    const savedCart = loadCartFromStorage()
-    setCart(savedCart)
-  }, [loadCartFromStorage])
-
-  // Salvar carrinho no localStorage com debounce
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      try {
-        console.log('💾 Salvando carrinho no localStorage:', cart)
-        if (cart.length > 0) {
-          localStorage.setItem('aeropizza_cart', JSON.stringify(cart))
-          console.log('✅ Carrinho salvo com sucesso')
-        } else {
-          localStorage.removeItem('aeropizza_cart')
-          console.log('🗑️ Carrinho removido (está vazio)')
-        }
-      } catch (error) {
-        console.error('❌ Erro ao salvar carrinho:', error)
-      }
-    }, 300) // 300ms debounce
-
-    return () => clearTimeout(timer)
   }, [cart])
 
   const addToCart = useCallback((product: Omit<CartItem, 'quantity' | 'notes'>) => {
@@ -79,14 +63,6 @@ export function useCart() {
         )
       } else {
         newCart = [...prev, { ...product, quantity: 1, notes: '' }]
-      }
-      
-      // Salvar imediatamente no localStorage
-      try {
-        localStorage.setItem('aeropizza_cart', JSON.stringify(newCart))
-        console.log('💾 Carrinho salvo imediatamente após adicionar item')
-      } catch (error) {
-        console.error('❌ Erro ao salvar carrinho:', error)
       }
       
       return newCart

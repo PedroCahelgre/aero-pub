@@ -51,7 +51,6 @@ import {
   ChevronUp,
   MoreVertical,
   Megaphone,
-  Bullhorn,
   AtSign,
   Hash,
   Link,

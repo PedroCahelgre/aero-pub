@@ -30,6 +30,7 @@ interface Product {
   price: number
   image?: string
   category: {
+    id: string
     name: string
   }
   preparationTime: number
@@ -108,7 +109,7 @@ export default function CardapioPage() {
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          product.description.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesCategory = selectedCategory === 'all' || product.category?.id === selectedCategory || product.categoryId === selectedCategory
+    const matchesCategory = selectedCategory === 'all' || product.category?.id === selectedCategory
     const matchesAvailability = !showAvailableOnly || product.available
     
     return matchesSearch && matchesCategory && matchesAvailability

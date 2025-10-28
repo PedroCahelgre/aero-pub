@@ -90,8 +90,7 @@ export default function QuickActions({ onQuickAdd }: QuickActionsProps) {
           price: item.price,
           category: { name: 'Pizzas' },
           description: 'Item do combo',
-          preparationTime: combo.preparationTime,
-          available: true
+          preparationTime: combo.preparationTime
         })
       }
       

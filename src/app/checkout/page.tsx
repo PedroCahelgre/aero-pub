@@ -14,6 +14,8 @@ import { useCart } from '@/hooks/useCart'
 import { useToast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
 
+type DeliveryType = 'DELIVERY' | 'PICKUP'
+
 export default function CheckoutPage() {
   const router = useRouter()
   const { cart, updateQuantity, removeFromCart, clearCart, getTotalPrice, getCartCount } = useCart()
@@ -24,7 +26,7 @@ export default function CheckoutPage() {
     customerPhone: '',
     customerEmail: '',
     deliveryAddress: '',
-    deliveryType: 'DELIVERY',
+    deliveryType: 'DELIVERY' as DeliveryType,
     paymentMethod: 'CASH',
     notes: ''
   })
@@ -195,15 +197,12 @@ export default function CheckoutPage() {
       const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`
       window.open(whatsappUrl, '_blank', 'noopener,noreferrer')
       
-      // Limpar carrinho e redirecionar
-      clearCart()
-      
       toast({
         title: "Pedido realizado com sucesso!",
         description: `Pedido #${order.orderNumber} enviado para WhatsApp`,
       })
       
-      // Redirecionar para página de confirmação
+      // Redirecionar para página de confirmação ANTES de limpar o carrinho
       router.push(`/order-confirmation?order=${order.orderNumber}&total=${totalPrice.toFixed(2)}&payment=${orderData.paymentMethod}`)
       
     } catch (error) {
@@ -380,7 +379,7 @@ export default function CheckoutPage() {
                     <Label>Tipo de Entrega</Label>
                     <RadioGroup
                       value={orderData.deliveryType}
-                      onValueChange={(value) => setOrderData({...orderData, deliveryType: value})}
+                      onValueChange={(value) => setOrderData({...orderData, deliveryType: value as DeliveryType})}
                       className="mt-2"
                     >
                       <div className="flex items-center space-x-2">
