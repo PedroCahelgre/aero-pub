@@ -21,28 +21,34 @@ export function useAuth() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Check if admin is logged in
-    const storedAdmin = localStorage.getItem('admin')
-    if (storedAdmin) {
-      try {
-        const parsedAdmin = JSON.parse(storedAdmin)
-        setAdmin(parsedAdmin)
-      } catch (error) {
-        console.error('Error parsing admin data:', error)
-        localStorage.removeItem('admin')
+    if (typeof window !== 'undefined') {
+      // Check if admin is logged in
+      const storedAdmin = localStorage.getItem('admin')
+      if (storedAdmin) {
+        try {
+          const parsedAdmin = JSON.parse(storedAdmin)
+          setAdmin(parsedAdmin)
+        } catch (error) {
+          console.error('Error parsing admin data:', error)
+          localStorage.removeItem('admin')
+        }
       }
     }
     setLoading(false)
   }, [])
 
   const login = (adminData: Admin) => {
-    setAdmin(adminData)
-    localStorage.setItem('admin', JSON.stringify(adminData))
+    if (typeof window !== 'undefined') {
+      setAdmin(adminData)
+      localStorage.setItem('admin', JSON.stringify(adminData))
+    }
   }
 
   const logout = () => {
-    setAdmin(null)
-    localStorage.removeItem('admin')
+    if (typeof window !== 'undefined') {
+      setAdmin(null)
+      localStorage.removeItem('admin')
+    }
   }
 
   const isMasterAdmin = () => {

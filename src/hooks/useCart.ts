@@ -1,134 +1,122 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { Product } from '@/payload-types'
 
-export interface CartItem {
-  id: string
-  name: string
-  description: string
-  price: number
-  image?: string
-  category: {
-    name: string
-  }
-  preparationTime: number
+// Extende o tipo Product para incluir a quantidade e as notas do item no carrinho
+export interface CartItem extends Product {
   quantity: number
   notes: string
 }
 
-// Helper function to safely load cart from localStorage on the client side
-const getInitialCart = () => {
-  if (typeof window === 'undefined') {
-    return [];
-  }
-  try {
-    const savedCart = window.localStorage.getItem('aeropizza_cart');
-    console.log('🔄 Carregando carrinho inicial do localStorage:', savedCart);
-    return savedCart ? JSON.parse(savedCart) : [];
-  } catch (error) {
-    console.error('❌ Erro ao carregar carrinho inicial:', error);
-    return [];
-  }
-};
-
+/**
+ * Hook para gerir o estado do carrinho de compras.
+ *
+ * Utiliza o localStorage para persistir o carrinho entre as sessões.
+ * O estado é inicializado de forma preguiçosa a partir do localStorage para evitar
+ * problemas de hidratação e garantir que o estado está sincronizado desde o início.
+ */
 export function useCart() {
-  const [cart, setCart] = useState<CartItem[]>(getInitialCart);
+  // Inicialização preguiçosa do estado a partir do localStorage
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    // Acesso ao localStorage apenas no lado do cliente
+    if (typeof window === 'undefined') {
+      return []
+    }
+    try {
+      const savedCart = window.localStorage.getItem('aeropizza_cart')
+      return savedCart ? JSON.parse(savedCart) : []
+    } catch (error) {
+      console.error('❌ Erro ao carregar o carrinho do localStorage:', error)
+      return []
+    }
+  })
 
-  // Salvar carrinho no localStorage
+  // Efeito para persistir o estado do carrinho no localStorage sempre que ele muda
   useEffect(() => {
     try {
-      console.log('💾 Salvando carrinho no localStorage:', cart)
-      if (cart.length > 0) {
-        localStorage.setItem('aeropizza_cart', JSON.stringify(cart))
-        console.log('✅ Carrinho salvo com sucesso')
+      // Se o carrinho estiver vazio, remove o item do localStorage
+      if (cart.length === 0) {
+        window.localStorage.removeItem('aeropizza_cart')
       } else {
-        localStorage.removeItem('aeropizza_cart')
-        console.log('🗑️ Carrinho removido (está vazio)')
+        window.localStorage.setItem('aeropizza_cart', JSON.stringify(cart))
       }
     } catch (error) {
-      console.error('❌ Erro ao salvar carrinho:', error)
+      console.error('❌ Erro ao salvar o carrinho no localStorage:', error)
     }
   }, [cart])
 
-  const addToCart = useCallback((product: Omit<CartItem, 'quantity' | 'notes'>) => {
-    setCart(prev => {
-      const existing = prev.find(item => item.id === product.id)
-      
-      let newCart
-      if (existing) {
-        newCart = prev.map(item =>
+  // Adiciona um produto ao carrinho ou incrementa a sua quantidade se já existir
+  const addToCart = useCallback((product: Product) => {
+    setCart(prevCart => {
+      const existingItem = prevCart.find(item => item.id === product.id)
+      if (existingItem) {
+        // Se o item já existe, aumenta a quantidade
+        return prevCart.map(item =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         )
       } else {
-        newCart = [...prev, { ...product, quantity: 1, notes: '' }]
+        // Adiciona um novo item ao carrinho
+        return [...prevCart, { ...product, quantity: 1, notes: '' }]
       }
-      
-      return newCart
     })
   }, [])
 
+  // Atualiza a quantidade de um item específico no carrinho
   const updateQuantity = useCallback((productId: string, change: number) => {
-    setCart(prev => 
-      prev.map(item => {
-        if (item.id === productId) {
-          const newQuantity = item.quantity + change
-          return newQuantity > 0 ? { ...item, quantity: newQuantity } : null
-        }
-        return item
-      }).filter(Boolean) as CartItem[]
+    setCart(prevCart =>
+      prevCart
+        .map(item => {
+          if (item.id === productId) {
+            const newQuantity = item.quantity + change
+            // Se a nova quantidade for positiva, atualiza; caso contrário, prepara para remover
+            return newQuantity > 0 ? { ...item, quantity: newQuantity } : null
+          }
+          return item
+        })
+        // Filtra os itens nulos (aqueles cuja quantidade chegou a zero)
+        .filter((item): item is CartItem => item !== null)
     )
   }, [])
 
+  // Atualiza as notas de um item específico no carrinho
   const updateNotes = useCallback((productId: string, notes: string) => {
-    setCart(prev => 
-      prev.map(item =>
+    setCart(prevCart =>
+      prevCart.map(item =>
         item.id === productId ? { ...item, notes } : item
       )
     )
   }, [])
 
+  // Remove um item do carrinho
   const removeFromCart = useCallback((productId: string) => {
-    setCart(prev => prev.filter(item => item.id !== productId))
+    setCart(prevCart => prevCart.filter(item => item.id !== productId))
   }, [])
 
+  // Limpa todos os itens do carrinho
   const clearCart = useCallback(() => {
     setCart([])
   }, [])
 
-  const getTotalPrice = useCallback((deliveryType: 'DELIVERY' | 'PICKUP' = 'DELIVERY') => {
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
-    const deliveryFee = deliveryType === 'DELIVERY' ? 8.00 : 0
-    return subtotal + deliveryFee
-  }, [cart])
+  // Calcula o preço total, incluindo a taxa de entrega se aplicável
+  const getTotalPrice = useCallback(
+    (deliveryType: 'DELIVERY' | 'PICKUP' = 'DELIVERY') => {
+      const subtotal = cart.reduce(
+        (sum, item) => sum + (item.price * item.quantity),
+        0
+      )
+      const deliveryFee = deliveryType === 'DELIVERY' ? 8.00 : 0
+      return subtotal + deliveryFee
+    },
+    [cart]
+  )
 
+  // Calcula o número total de itens no carrinho
   const getCartCount = useCallback(() => {
     return cart.reduce((sum, item) => sum + item.quantity, 0)
   }, [cart])
-
-  // Forçar recarga do carrinho do localStorage
-  const forceReloadCart = useCallback(() => {
-    try {
-      const savedCart = localStorage.getItem('aeropizza_cart')
-      console.log('🔄 Forçando recarga do carrinho:', savedCart)
-      
-      if (savedCart) {
-        const parsedCart = JSON.parse(savedCart)
-        console.log('📦 Carrinho recarregado:', parsedCart)
-        setCart(parsedCart)
-        return parsedCart
-      } else {
-        console.log('📭 Nenhum carrinho para recarregar')
-        setCart([])
-        return []
-      }
-    } catch (error) {
-      console.error('❌ Erro ao recarregar carrinho:', error)
-      setCart([])
-      return []
-    }
-  }, [])
 
   return {
     cart,
@@ -139,6 +127,5 @@ export function useCart() {
     clearCart,
     getTotalPrice,
     getCartCount,
-    forceReloadCart
   }
 }

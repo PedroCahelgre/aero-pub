@@ -19,31 +19,33 @@ export default function SimpleInstallPopup() {
   const [showInstructions, setShowInstructions] = useState(false)
 
   useEffect(() => {
-    // Verificar se já foi dispensado
-    const wasDismissed = localStorage.getItem('install-popup-dismissed')
-    if (wasDismissed) {
-      return
-    }
+    if (typeof window !== 'undefined') {
+      // Verificar se já foi dispensado
+      const wasDismissed = localStorage.getItem('install-popup-dismissed')
+      if (wasDismissed) {
+        return
+      }
 
-    // Capturar evento de instalação PWA
-    const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault()
-      setDeferredPrompt(e as BeforeInstallPromptEvent)
-      setShowPopup(true)
-    }
-
-    // Mostrar popup após 3 segundos se não houver evento PWA
-    const timer = setTimeout(() => {
-      if (!deferredPrompt) {
+      // Capturar evento de instalação PWA
+      const handleBeforeInstallPrompt = (e: Event) => {
+        e.preventDefault()
+        setDeferredPrompt(e as BeforeInstallPromptEvent)
         setShowPopup(true)
       }
-    }, 3000)
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+      // Mostrar popup após 3 segundos se não houver evento PWA
+      const timer = setTimeout(() => {
+        if (!deferredPrompt) {
+          setShowPopup(true)
+        }
+      }, 3000)
 
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
-      clearTimeout(timer)
+      window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+
+      return () => {
+        window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+        clearTimeout(timer)
+      }
     }
   }, [deferredPrompt])
 
@@ -66,12 +68,26 @@ export default function SimpleInstallPopup() {
   }
 
   const handleClose = () => {
-    setShowPopup(false)
-    setShowInstructions(false)
-    localStorage.setItem('install-popup-dismissed', 'true')
+    if (typeof window !== 'undefined') {
+      setShowPopup(false)
+      setShowInstructions(false)
+      localStorage.setItem('install-popup-dismissed', 'true')
+    }
   }
 
   const getBrowserInstructions = () => {
+    if (typeof window === 'undefined' || !navigator) {
+      return {
+        icon: <Download className="w-5 h-5" />,
+        title: "Instruções de Instalação",
+        steps: [
+          "1. Abra este site no seu navegador preferido.",
+          "2. Procure por opções de instalação no menu do navegador.",
+          "3. Siga as instruções para 'Instalar como app' ou 'Adicionar à Tela Inicial'."
+        ]
+      }
+    }
+
     const userAgent = navigator.userAgent.toLowerCase()
     
     if (userAgent.includes('chrome')) {

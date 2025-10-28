@@ -1,35 +1,12 @@
 // Hook para usar dados do banco de dados
 import { useState, useEffect } from 'react'
-import { getStaticCategories, getStaticPixConfig } from '@/lib/static-utils'
-
-// Tipos de dados (idealmente, viriam de um arquivo de tipos compartilhado)
-interface Product {
-  id: string
-  name: string
-  description: string
-  price: number
-  image?: string
-  category: {
-    name: string
-  }
-  preparationTime: number
-  available: boolean
-  ingredients?: string
-}
-
-interface Category {
-  id: string
-  name: string
-  active: boolean
-}
-
-interface PixConfig {
-  key: string
-  pixKey: string
-  pixType: string
-  recipient: string
-  active: boolean
-}
+import {
+  getStaticCategories,
+  getStaticPixConfig,
+} from '@/lib/static-utils'
+import { Product } from '@/payload-types'
+import { Category } from '@/payload-types'
+import { PixConfig } from '@/payload-types'
 
 export function useStaticProducts() {
   const [products, setProducts] = useState<Product[]>([])

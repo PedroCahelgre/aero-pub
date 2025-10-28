@@ -24,11 +24,11 @@ export default function AdminLoginPage() {
       })
 
       if (response.ok) {
-        const data = await response.json()
         if (typeof window !== 'undefined') {
+          const data = await response.json()
           localStorage.setItem('admin', JSON.stringify(data.admin))
+          router.push('/admin')
         }
-        router.push('/admin')
       } else {
         alert('Credenciais inválidas')
       }

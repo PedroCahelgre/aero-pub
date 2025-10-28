@@ -15,58 +15,71 @@ import { useToast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
 
 type DeliveryType = 'DELIVERY' | 'PICKUP'
+type PaymentMethod = 'CASH' | 'CREDIT_CARD' | 'PIX'
+
+interface OrderData {
+  customerName: string
+  customerPhone: string
+  customerEmail: string
+  deliveryAddress: string
+  deliveryType: DeliveryType
+  paymentMethod: PaymentMethod
+  notes: string
+}
 
 export default function CheckoutPage() {
   const router = useRouter()
   const { cart, updateQuantity, removeFromCart, clearCart, getTotalPrice, getCartCount } = useCart()
   const { toast } = useToast()
   
-  const [orderData, setOrderData] = useState({
+  const [orderData, setOrderData] = useState<OrderData>({
     customerName: '',
     customerPhone: '',
     customerEmail: '',
     deliveryAddress: '',
-    deliveryType: 'DELIVERY' as DeliveryType,
+    deliveryType: 'DELIVERY',
     paymentMethod: 'CASH',
     notes: ''
   })
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    console.log('🔍 Página de checkout montada')
-    
-    // Verificar carrinho de forma simples e direta
-    const checkCart = () => {
-      const savedCart = localStorage.getItem('aeropizza_cart')
-      console.log('💾 Carrinho no localStorage:', savedCart)
+    if (typeof window !== 'undefined') {
+      console.log('🔍 Página de checkout montada')
       
-      if (!savedCart) {
-        console.log('📭 Nenhum carrinho encontrado, redirecionando')
-        router.push('/agendar')
-        return
-      }
-      
-      try {
-        const parsedCart = JSON.parse(savedCart)
-        if (parsedCart.length === 0) {
-          console.log('📭 Carrinho vazio, redirecionando')
+      // Verificar carrinho de forma simples e direta
+      const checkCart = () => {
+        const savedCart = localStorage.getItem('aeropizza_cart')
+        console.log('💾 Carrinho no localStorage:', savedCart)
+
+        if (!savedCart) {
+          console.log('📭 Nenhum carrinho encontrado, redirecionando')
           router.push('/agendar')
-        } else {
-          console.log('✅ Carrinho tem itens:', parsedCart.length)
+          return
         }
-      } catch (error) {
-        console.error('❌ Erro ao parsear carrinho:', error)
-        router.push('/agendar')
+
+        try {
+          const parsedCart = JSON.parse(savedCart)
+          if (parsedCart.length === 0) {
+            console.log('📭 Carrinho vazio, redirecionando')
+            router.push('/agendar')
+          } else {
+            console.log('✅ Carrinho tem itens:', parsedCart.length)
+          }
+        } catch (error) {
+          console.error('❌ Erro ao parsear carrinho:', error)
+          router.push('/agendar')
+        }
       }
+
+      // Verificar imediatamente
+      checkCart()
+
+      // E verificar novamente após um pequeno delay
+      const timer = setTimeout(checkCart, 100)
+
+      return () => clearTimeout(timer)
     }
-    
-    // Verificar imediatamente
-    checkCart()
-    
-    // E verificar novamente após um pequeno delay
-    const timer = setTimeout(checkCart, 100)
-    
-    return () => clearTimeout(timer)
   }, [router])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -154,7 +167,7 @@ export default function CheckoutPage() {
       
       let message = `*🍕 NOVO PEDIDO - AERO PIZZA*\n\n`
       message += `*📋 Nº do Pedido:* ${order.orderNumber}\n`
-      message += `*📅 Data:* ${new Date().toLocaleDateString('pt-BR')}\n`
+      message += `*📅 Data:* ${new Date().toLocaleString('pt-BR')}\n`
       message += `*🕒 Horário:* ${new Date().toLocaleTimeString('pt-BR')}\n\n`
       message += `*👤 Dados do Cliente:*\n`
       message += `*Nome:* ${orderData.customerName}\n`
@@ -197,12 +210,15 @@ export default function CheckoutPage() {
       const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`
       window.open(whatsappUrl, '_blank', 'noopener,noreferrer')
       
+      // Limpar carrinho e redirecionar
+      clearCart()
+
       toast({
         title: "Pedido realizado com sucesso!",
         description: `Pedido #${order.orderNumber} enviado para WhatsApp`,
       })
       
-      // Redirecionar para página de confirmação ANTES de limpar o carrinho
+      // Redirecionar para página de confirmação
       router.push(`/order-confirmation?order=${order.orderNumber}&total=${totalPrice.toFixed(2)}&payment=${orderData.paymentMethod}`)
       
     } catch (error) {
@@ -379,7 +395,7 @@ export default function CheckoutPage() {
                     <Label>Tipo de Entrega</Label>
                     <RadioGroup
                       value={orderData.deliveryType}
-                      onValueChange={(value) => setOrderData({...orderData, deliveryType: value as DeliveryType})}
+                      onValueChange={(value: string) => setOrderData({...orderData, deliveryType: value as DeliveryType})}
                       className="mt-2"
                     >
                       <div className="flex items-center space-x-2">
@@ -416,7 +432,7 @@ export default function CheckoutPage() {
                     <Label>Forma de Pagamento</Label>
                     <RadioGroup
                       value={orderData.paymentMethod}
-                      onValueChange={(value) => setOrderData({...orderData, paymentMethod: value})}
+                      onValueChange={(value: string) => setOrderData({...orderData, paymentMethod: value as PaymentMethod})}
                       className="mt-2"
                     >
                       <div className="flex items-center space-x-2">
