@@ -25,7 +25,9 @@ export default function AdminLoginPage() {
 
       if (response.ok) {
         const data = await response.json()
-        localStorage.setItem('admin', JSON.stringify(data.admin))
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('admin', JSON.stringify(data.admin))
+        }
         router.push('/admin')
       } else {
         alert('Credenciais inválidas')
