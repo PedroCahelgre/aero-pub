@@ -91,12 +91,6 @@ export default function AdminLoginPage() {
               {loading ? 'Entrando...' : 'Entrar'}
             </Button>
           </form>
-          
-          <div className="mt-6 text-sm text-yellow-400/80">
-            <p className="font-semibold mb-2 text-yellow-400">Credenciais de teste:</p>
-            <p>Admin 1: comerciochalegre@gmail.com / 87168087</p>
-            <p>Admin 2: aeropizza@admin.com / 12345678</p>
-          </div>
         </CardContent>
       </Card>
     </div>

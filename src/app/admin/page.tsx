@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-
+import AdminProtectedRoute from '@/components/admin/AdminProtectedRoute'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -135,6 +135,7 @@ export default function AdminPage() {
   ]
 
   return (
+    <AdminProtectedRoute>
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-black to-gray-950">
       {/* Header Superior */}
       <header className="bg-black/90 backdrop-blur-xl border-b border-gray-700 sticky top-0 z-50 shadow-lg">
@@ -538,5 +539,6 @@ export default function AdminPage() {
         </main>
       </div>
     </div>
+    </AdminProtectedRoute>
   )
 }
