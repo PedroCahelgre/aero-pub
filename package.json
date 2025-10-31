@@ -5,10 +5,8 @@
   "scripts": {
     "dev": "nodemon --exec \"npx tsx server.ts\" --watch server.ts --watch src --ext ts,tsx,js,jsx 2>&1 | tee dev.log",
     "build": "next build",
-    "build:static": "next build",
     "build:analyze": "ANALYZE=true next build",
     "start": "NODE_ENV=production tsx server.ts 2>&1 | tee server.log",
-    "start:static": "npx serve out -l 3000",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "type-check": "tsc --noEmit",
@@ -18,8 +16,6 @@
     "db:reset": "prisma migrate reset",
     "db:seed": "npx tsx scripts/clean-and-seed.ts",
     "db:seed:pix": "node scripts/seed-pix.js",
-    "deploy:preview": "npm run build:static && npm run start:static",
-    "deploy:netlify": "npm run build:static",
     "clean": "rm -rf .next out node_modules/.cache",
     "postbuild": "echo '✅ Build completed successfully!'"
   },
