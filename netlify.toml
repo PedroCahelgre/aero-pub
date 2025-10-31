@@ -7,21 +7,9 @@
   NODE_VERSION = "18"
   NPM_VERSION = "9"
 
-# Redirecionamentos para SPA routing
-[[redirects]]
-  from = "/admin"
-  to = "/login-admin.html"
-  status = 301
-
-[[redirects]]
-  from = "/admin/*"
-  to = "/login-admin.html"
-  status = 302
-
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
+# As rotas de API do Next.js são tratadas automaticamente pelo Netlify
+# quando o `publish` está configurado para `.next`.
+# A proteção da rota /admin é feita no lado do cliente.
 
 # Headers de segurança
 [[headers]]
@@ -82,8 +70,4 @@
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
 
-# Tratamento de erros
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 404
+# O Next.js tem seu próprio tratamento de 404, não sendo necessário redirecionamento.
