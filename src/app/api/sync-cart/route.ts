@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { CartItem } from '@/hooks/useCart'
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,8 +28,8 @@ export async function POST(request: NextRequest) {
     })
 
     // Sincronizar itens do carrinho
-    const synchronizedCart = []
-    const notFoundProducts = []
+    const synchronizedCart: CartItem[] = []
+    const notFoundProducts: string[] = []
 
     for (const cartItem of cartItems) {
       const dbProduct = productMap.get(cartItem.name.toLowerCase())
@@ -40,7 +41,9 @@ export async function POST(request: NextRequest) {
           description: dbProduct.description,
           price: dbProduct.price,
           image: dbProduct.image,
+          available: dbProduct.available,
           category: {
+            id: dbProduct.categoryId,
             name: dbProduct.category.name
           },
           preparationTime: dbProduct.preparationTime,

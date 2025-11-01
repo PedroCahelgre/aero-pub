@@ -88,7 +88,7 @@ export default function QuickActions({ onQuickAdd }: QuickActionsProps) {
           id: `${combo.id}-${item.name}`,
           name: item.name,
           price: item.price,
-          category: { name: 'Pizzas' },
+          category: { id: 'pizzas', name: 'Pizzas' },
           description: 'Item do combo',
           preparationTime: combo.preparationTime,
           available: true

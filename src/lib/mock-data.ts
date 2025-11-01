@@ -7,6 +7,7 @@ export const mockProducts = [
     price: 35.90,
     image: '/pizzas/margherita.jpg',
     category: {
+      id: '1',
       name: 'Pizzas Tradicionais'
     },
     preparationTime: 20,
@@ -20,6 +21,7 @@ export const mockProducts = [
     price: 42.90,
     image: '/pizzas/calabresa.jpg',
     category: {
+      id: '1',
       name: 'Pizzas Tradicionais'
     },
     preparationTime: 25,
@@ -33,6 +35,7 @@ export const mockProducts = [
     price: 45.90,
     image: '/pizzas/portuguesa.jpg',
     category: {
+      id: '1',
       name: 'Pizzas Tradicionais'
     },
     preparationTime: 25,
@@ -46,6 +49,7 @@ export const mockProducts = [
     price: 44.90,
     image: '/pizzas/frango-catupiry.jpg',
     category: {
+      id: '2',
       name: 'Pizzas Gourmet'
     },
     preparationTime: 30,
@@ -59,6 +63,7 @@ export const mockProducts = [
     price: 48.90,
     image: '/pizzas/quatro-queijos.jpg',
     category: {
+      id: '2',
       name: 'Pizzas Gourmet'
     },
     preparationTime: 28,
@@ -72,6 +77,7 @@ export const mockProducts = [
     price: 46.90,
     image: '/pizzas/pepperoni.jpg',
     category: {
+      id: '2',
       name: 'Pizzas Gourmet'
     },
     preparationTime: 25,
@@ -85,6 +91,7 @@ export const mockProducts = [
     price: 41.90,
     image: '/pizzas/vegetariana.jpg',
     category: {
+      id: '2',
       name: 'Pizzas Gourmet'
     },
     preparationTime: 22,
@@ -98,6 +105,7 @@ export const mockProducts = [
     price: 38.90,
     image: '/pizzas/chocolate.jpg',
     category: {
+      id: '2',
       name: 'Pizzas Gourmet'
     },
     preparationTime: 15,
@@ -111,6 +119,7 @@ export const mockProducts = [
     price: 12.90,
     image: '/bebidas/coca-cola.jpg',
     category: {
+      id: '3',
       name: 'Bebidas'
     },
     preparationTime: 0,
@@ -124,6 +133,7 @@ export const mockProducts = [
     price: 8.90,
     image: '/bebidas/suco-laranja.jpg',
     category: {
+      id: '3',
       name: 'Bebidas'
     },
     preparationTime: 5,

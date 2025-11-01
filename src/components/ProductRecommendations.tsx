@@ -15,20 +15,7 @@ import {
 } from 'lucide-react'
 import { useCart } from '@/hooks/useCart'
 import { useToast } from '@/hooks/use-toast'
-
-interface Product {
-  id: string
-  name: string
-  description: string
-  price: number
-  image?: string
-  category: {
-    name: string
-  }
-  preparationTime: number
-  rating?: number
-  isPopular?: boolean
-}
+import { Product } from '@/types'
 
 interface ProductRecommendationsProps {
   currentCart: any[]

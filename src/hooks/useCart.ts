@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Product } from '@/payload-types'
+import { Product } from '@/types'
 
 // Extende o tipo Product para incluir a quantidade e as notas do item no carrinho
 export interface CartItem extends Product {

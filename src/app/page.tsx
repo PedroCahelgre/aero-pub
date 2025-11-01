@@ -12,18 +12,7 @@ import { useCart } from '@/hooks/useCart'
 import { useStaticProducts } from '@/hooks/useStaticData'
 import { useToast } from '@/hooks/use-toast'
 import { Toaster } from '@/components/ui/toaster'
-
-interface Product {
-  id: string
-  name: string
-  description: string
-  price: number
-  image?: string
-  category: {
-    name: string
-  }
-  preparationTime: number
-}
+import { Product } from '@/types'
 
 export default function Home() {
   const [currentTime, setCurrentTime] = useState(new Date())

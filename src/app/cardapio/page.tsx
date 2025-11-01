@@ -22,20 +22,7 @@ import Link from 'next/link'
 import { useCart } from '@/hooks/useCart'
 import { useToast } from '@/hooks/use-toast'
 import { Toaster } from '@/components/ui/toaster'
-
-interface Product {
-  id: string
-  name: string
-  description: string
-  price: number
-  image?: string
-  category: {
-    name: string
-  }
-  preparationTime: number
-  available: boolean
-  ingredients?: string
-}
+import { Product } from '@/types'
 
 interface Category {
   id: string
@@ -108,7 +95,7 @@ export default function CardapioPage() {
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          product.description.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesCategory = selectedCategory === 'all' || product.category?.id === selectedCategory || product.categoryId === selectedCategory
+    const matchesCategory = selectedCategory === 'all' || product.category.id === selectedCategory
     const matchesAvailability = !showAvailableOnly || product.available
     
     return matchesSearch && matchesCategory && matchesAvailability

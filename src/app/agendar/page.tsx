@@ -14,23 +14,11 @@ import {
   Phone
 } from 'lucide-react'
 import Link from 'next/link'
-import { useCart } from '@/hooks/useCart'
+import { useCart, CartItem } from '@/hooks/useCart'
 import { useToast } from '@/hooks/use-toast'
 import { getStaticProducts } from '@/lib/static-utils'
 import { Toaster } from '@/components/ui/toaster'
-
-interface Product {
-  id: string
-  name: string
-  description: string
-  price: number
-  image?: string
-  category: {
-    name: string
-  }
-  preparationTime: number
-  available: boolean
-}
+import { Product } from '@/types'
 
 export default function AgendarPage() {
   const router = useRouter()
@@ -245,7 +233,7 @@ export default function AgendarPage() {
                   {cart && cart.length > 0 ? (
                     <div>
                       <div className="space-y-3 mb-4 max-h-64 overflow-y-auto">
-                        {cart.map((item, index) => (
+                        {cart.map((item: CartItem, index: number) => (
                           <div key={index} className="flex justify-between items-center">
                             <div className="flex-1">
                               <p className="font-medium text-sm">{item.name}</p>

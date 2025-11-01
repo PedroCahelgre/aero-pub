@@ -4,9 +4,7 @@ import {
   getStaticCategories,
   getStaticPixConfig,
 } from '@/lib/static-utils'
-import { Product } from '@/payload-types'
-import { Category } from '@/payload-types'
-import { PixConfig } from '@/payload-types'
+import { Product, Category, PixConfig } from '@/types'
 
 export function useStaticProducts() {
   const [products, setProducts] = useState<Product[]>([])
